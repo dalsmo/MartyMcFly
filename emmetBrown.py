@@ -1,6 +1,7 @@
 import sqlite3 as lite
 import datetime
 import pdb
+import csv
 
 # define the data range
 print("-------- Defining the processing range --------")
@@ -24,12 +25,17 @@ with con:
     cur.execute(statement)
     rows = cur.fetchall()
 
-# figure out who are the active people 
+# figure out who are the active people and
+# export all to csv
+csvFile = open("logs.csv", "w")
+writer = csv.writer(csvFile)
+
 activePeople = list();
 for row in rows:
+    writer.writerow(row)
     if row[1] not in activePeople:
         activePeople.append(row[1])
-
+csvFile.close()
 # create the result matrix
 resMatrix = [[0 for x in range(diffDays.days)] for y in range(len(activePeople))] # resmatrix[person][day]
 
