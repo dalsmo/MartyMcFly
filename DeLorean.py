@@ -38,7 +38,7 @@ app.add_url_rule('/',view_func=View.as_view('main'))
 
 
 app.debug = True
-app.run()
+app.run(host='0.0.0.0',port=5001)
 
 
 

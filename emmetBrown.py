@@ -1,16 +1,18 @@
 import sqlite3 as lite
 import datetime
 import pdb
+import csv
 
 # define the data range
 print("-------- Defining the processing range --------")
-startYear = input("year:")
-startMonth = input("month:")
+startYear = int(input("year:"))
+startMonth = int(input("month:"))
 startDate = datetime.date(startYear,startMonth,1)
 #endDate = datetime.date.today()-datetime.timedelta(days=1)
-endDate = startDate+datetime.timedelta(365/12)
+endDate = datetime.date(startYear,startMonth+1,1)
 diffDays = endDate-startDate
-print 'calculating for %i days' % diffDays.days
+print('calculating for %i days' % diffDays.days)
+print("between "+startDate.strftime('%Y-%m-%d') + " and "+ endDate.strftime('%Y-%m-%d'))
 print("-------- inputs defined, calculating ----------")
 
 # get the important part from the logs databace
@@ -23,12 +25,17 @@ with con:
     cur.execute(statement)
     rows = cur.fetchall()
 
-# figure out who are the active people 
+# figure out who are the active people and
+# export all to csv
+csvFile = open("logs.csv", "w")
+writer = csv.writer(csvFile)
+
 activePeople = list();
 for row in rows:
+    writer.writerow(row)
     if row[1] not in activePeople:
         activePeople.append(row[1])
-
+csvFile.close()
 # create the result matrix
 resMatrix = [[0 for x in range(diffDays.days)] for y in range(len(activePeople))] # resmatrix[person][day]
 
@@ -98,18 +105,18 @@ for day in range(diffDays.days):
             daysToPrint[day] = True           
 
 # pritn adiquit blanks and dates
-print '------------------------ output ----------------------------\n'
-print '               ',# 15 blanks
+print ('------------------------ output ----------------------------\n')
+print ('               ', end="")# 15 blanks
 for day in range(diffDays.days):
     if daysToPrint[day]:
-        print str(day).ljust(3),
-print ''
+        print (str(day).ljust(3), end="")
+print ('')
 
 for personIndex in range(len(activePeople)):
-    print activePeople[personIndex].ljust(15),
+    print (activePeople[personIndex].ljust(15), end="")
     for dayIndex in range(diffDays.days):
         if daysToPrint[dayIndex]:
-            print str(resMatrix[personIndex][dayIndex]).ljust(3),
+            print (str(resMatrix[personIndex][dayIndex]).ljust(3), end="")
     print('')
             
         
